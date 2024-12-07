@@ -6,11 +6,11 @@ namespace ErpCalciolari.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TestController : ControllerBase
+    public class BasicFunctionalityController : ControllerBase
     {
         private readonly MyDbContext _context;
 
-        public TestController(MyDbContext context)
+        public BasicFunctionalityController(MyDbContext context)
         {
             _context = context;
         }

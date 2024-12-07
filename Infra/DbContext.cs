@@ -3,7 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ErpCalciolari.Infra
 {
-    public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(options)
+    public class MyDbContext : DbContext
     {
+        public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Employee> Employees { get; set; }
     }
 }
