@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ErpCalciolari.Models
 {

@@ -1,6 +1,5 @@
 ﻿using ErpCalciolari.DTOs.Create;
 using ErpCalciolari.DTOs.Update;
-using ErpCalciolari.DTOs.Read;
 using ErpCalciolari.Services;
 using Microsoft.AspNetCore.Mvc;
 

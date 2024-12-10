@@ -22,27 +22,32 @@ namespace ErpCalciolari.Repositories
 
         public async Task<List<Employee>> GetAllEmployeesAsync()
         {
-            return await _context.Employees.ToListAsync();
+            var employees = await _context.Employees.ToListAsync();
+            if (employees == null || employees.Count == 0)
+            {
+                throw new KeyNotFoundException("No employees found.");
+            }
+            return employees;
         }
 
         public async Task<Employee> GetEmployeeWithEmailAsync(string email)
         {
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Email == email)
-                ?? throw new KeyNotFoundException($"no user found with the email '{email}'");
+                ?? throw new KeyNotFoundException($"no employee found with the email {email}");
             return employee;
         }
 
         public async Task<Employee> GetEmployeeWithUsernameAsync(string username)
         {
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Username == username)
-                ?? throw new KeyNotFoundException($"no user found with the username '{username}'");
+                ?? throw new KeyNotFoundException($"no employee found with the username {username}");
             return employee;
         }
 
         public async Task<Employee> GetEmployeeWithIdAsync(Guid id)
         {
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id)
-                ?? throw new KeyNotFoundException($"no user found with the id '{id}'");
+                ?? throw new KeyNotFoundException($"no employee found with the id {id}");
             return employee;
         }
 
@@ -55,8 +60,8 @@ namespace ErpCalciolari.Repositories
 
         public async Task<bool> DeleteEmployeeWithIdAsync(Guid id)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id)
-                ?? throw new Exception($"{{\"error\": \"not_found\", \"message\": \"no user found with the id '{id}'\"}}");
+            var employee = await GetEmployeeWithIdAsync(id);
+
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
             return true;

@@ -16,17 +16,11 @@ namespace ErpCalciolari.Services
         }
 
 
-        public async Task<EmployeeReadDto> CreateEmployeeAsync(EmployeeCreateDto createDto)
+        public async Task<Employee> CreateEmployeeAsync(EmployeeCreateDto createDto)
         {
                 var employeeFromDto = new Employee(createDto.Name, createDto.Username, createDto.Email, createDto.Password);
                 var createdEmployee = await _repository.CreateEmployeeAsync(employeeFromDto);
-                return new EmployeeReadDto
-                {
-                    Id = createdEmployee.Id,
-                    Name = createdEmployee.Name,
-                    Username = createdEmployee.Username,
-                    Email = createdEmployee.Email
-                };
+                return createdEmployee;
         }
 
         public async Task<List<EmployeeReadDto>> GetEmployeesAsync()
@@ -34,7 +28,6 @@ namespace ErpCalciolari.Services
                 var employees = await _repository.GetAllEmployeesAsync();
                 return employees.Select(e => new EmployeeReadDto
                 {
-                    Id = e.Id,
                     Name = e.Name,
                     Username = e.Username,
                     Email = e.Email
@@ -46,7 +39,6 @@ namespace ErpCalciolari.Services
             var employee = await _repository.GetEmployeeWithEmailAsync(email);
             return new EmployeeReadDto
             {
-                Id = employee.Id,
                 Name = employee.Name,
                 Username = employee.Username,
                 Email = employee.Email
@@ -58,7 +50,6 @@ namespace ErpCalciolari.Services
             var employee = await _repository.GetEmployeeWithUsernameAsync(username);
             return new EmployeeReadDto
             {
-                Id = employee.Id,
                 Name = employee.Name,
                 Username = employee.Username,
                 Email = employee.Email
@@ -70,7 +61,6 @@ namespace ErpCalciolari.Services
             var employee = await _repository.GetEmployeeWithIdAsync(id);
             return new EmployeeReadDto
             {
-                Id = employee.Id,
                 Name = employee.Name,
                 Username = employee.Username,
                 Email = employee.Email

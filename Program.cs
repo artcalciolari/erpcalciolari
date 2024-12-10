@@ -1,10 +1,12 @@
 using ErpCalciolari.Infra;
 using ErpCalciolari.Repositories;
 using ErpCalciolari.Services;
+using ErpCalciolari.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation.AspNetCore;
 using FluentValidation;
-using ErpCalciolari.DTOs.Create;
+using ErpCalciolari.DTOs.Create.Validators;
+using ErpCalciolari.DTOs.Update.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<EmployeeCreateDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<EmployeeUpdateDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductCreateDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductUpdateDtoValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +30,11 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 // Register all services and repositories
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ProductService>();
+
+// Debug logging
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -34,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

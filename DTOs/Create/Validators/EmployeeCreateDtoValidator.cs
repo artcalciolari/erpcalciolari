@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace ErpCalciolari.DTOs.Create
+namespace ErpCalciolari.DTOs.Create.Validators
 {
     public class EmployeeCreateDtoValidator : AbstractValidator<EmployeeCreateDto>
     {
