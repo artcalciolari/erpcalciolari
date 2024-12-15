@@ -1,8 +1,8 @@
 ﻿using ErpCalciolari.Models;
-using ErpCalciolari.Repositories;
 using ErpCalciolari.DTOs.Create;
 using ErpCalciolari.DTOs.Read;
 using ErpCalciolari.DTOs.Update;
+using ErpCalciolari.Repositories.Interfaces;
 namespace ErpCalciolari.Services
 {
     public class ProductService

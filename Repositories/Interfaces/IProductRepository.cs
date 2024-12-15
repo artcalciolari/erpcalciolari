@@ -1,6 +1,6 @@
 ﻿using ErpCalciolari.Models;
 
-namespace ErpCalciolari.Repositories
+namespace ErpCalciolari.Repositories.Interfaces
 {
     public interface IProductRepository
     {
@@ -8,7 +8,7 @@ namespace ErpCalciolari.Repositories
         Task<List<Product>> GetAllProductsAsync();
         Task<Product> GetProductWithIdAsync(Guid id);
         Task<Product> GetProductWithCodeAsync(int code);
-        Task<bool> UpdateProductAsync(Guid id,  Product product);
+        Task<bool> UpdateProductAsync(Guid id, Product product);
         Task<bool> DeleteProductWithIdAsync(Guid id);
     }
 }

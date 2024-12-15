@@ -22,7 +22,6 @@ namespace ErpCalciolari.Models
 
         public Employee(string name, string username, string email, string passwordHash)
         {
-            Id = Guid.NewGuid();
             Name = name;
             Username = username;
             Email = email;

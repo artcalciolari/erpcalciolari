@@ -1,5 +1,6 @@
 ﻿using ErpCalciolari.Infra;
 using ErpCalciolari.Models;
+using ErpCalciolari.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ErpCalciolari.Repositories

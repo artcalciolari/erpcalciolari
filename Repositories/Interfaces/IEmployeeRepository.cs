@@ -1,6 +1,6 @@
 ﻿using ErpCalciolari.Models;
 
-namespace ErpCalciolari.Repositories
+namespace ErpCalciolari.Repositories.Interfaces
 {
     public interface IEmployeeRepository
     {

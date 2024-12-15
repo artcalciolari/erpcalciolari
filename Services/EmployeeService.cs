@@ -2,7 +2,7 @@
 using ErpCalciolari.DTOs.Create;
 using ErpCalciolari.DTOs.Update;
 using ErpCalciolari.Models;
-using ErpCalciolari.Repositories;
+using ErpCalciolari.Repositories.Interfaces;
 
 namespace ErpCalciolari.Services
 {
