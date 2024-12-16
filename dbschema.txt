@@ -1,0 +1,78 @@
+create database dev
+    with owner postgres;
+
+create table public.employees
+(
+    id           uuid         not null
+        primary key,
+    name         varchar(100) not null,
+    username     varchar(100) not null,
+    email        varchar(100) not null,
+    passwordhash varchar(255) not null
+);
+
+alter table public.employees
+    owner to postgres;
+
+create table public.products
+(
+    id       uuid           not null
+        constraint estoque_pkey
+            primary key,
+    code     integer        not null
+        constraint products_pk
+            unique,
+    name     varchar(100)   not null,
+    type     varchar(100)   not null,
+    quantity integer        not null,
+    price    numeric(10, 2) not null
+);
+
+alter table public.products
+    owner to postgres;
+
+create table public.customers
+(
+    id      uuid         not null
+        primary key,
+    name    varchar(100) not null
+        constraint customers_pk
+            unique,
+    phone   varchar(100) not null,
+    email   varchar(100),
+    address varchar(100)
+);
+
+alter table public.customers
+    owner to postgres;
+
+create table public.orders
+(
+    id            uuid         not null
+        primary key,
+    order_number  integer      not null
+        unique,
+    customer_name varchar(100) not null
+        references public.customers (name),
+    order_date    date         not null,
+    delivery_date date         not null
+);
+
+alter table public.orders
+    owner to postgres;
+
+create table public.order_items
+(
+    id           uuid           not null
+        primary key,
+    order_number integer        not null
+        references public.orders (order_number),
+    product_code integer        not null
+        references public.products (code),
+    quantity     integer        not null,
+    price        numeric(10, 2) not null
+);
+
+alter table public.order_items
+    owner to postgres;
+

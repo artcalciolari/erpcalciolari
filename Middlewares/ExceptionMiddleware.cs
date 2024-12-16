@@ -60,6 +60,18 @@
                     };
                     break;
 
+                case InvalidOperationException ex:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    response = new
+                    {
+                        error = new
+                        {
+                            code = statusCode,
+                            message = ex.Message
+                        }
+                    };
+                    break;
+
                 default:
                     statusCode = StatusCodes.Status500InternalServerError;
                     response = new
