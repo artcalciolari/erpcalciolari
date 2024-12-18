@@ -44,4 +44,4 @@ jobs:
         run: |
           docker stop backend || true
           docker rm backend || true
-          docker run -d -p 5020:5020 --name backend ghcr.io/${{github.repository}}/backend:latest
+          docker run -e ASPNETCORE_ENVIRONMENT=Production -d --name backend --network prod-network -p 8080:8080  ghcr.io/${{github.repository}}/backend:latest
