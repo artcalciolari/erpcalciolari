@@ -5,7 +5,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-   pull_request:
+  pull_request:
       branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -15,11 +15,13 @@ jobs:
   build-and-deploy:
     # The type of runner that the job will run on
     runs-on: self-hosted
+    permissions:
+      packages: write
+      contents: read      
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repository
       - uses: actions/checkout@v4
   
       # Login to GitHub Container Registry
@@ -34,7 +36,8 @@ jobs:
 
       # Push the Docker image to GitHub Container Registry
       - name: Push image to Container Registry
-        run: docker push ghcr.io/${{ github.repository }}/backend:latest
+        run: |
+          docker push ghcr.io/${{ github.repository }}/backend:latest
 
       # Deploy image on self hosted runner
       - name: Deploy image on self hosted runner
