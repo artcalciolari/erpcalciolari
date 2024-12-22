@@ -2,6 +2,7 @@
 using ErpCalciolari.DTOs.Read;
 using ErpCalciolari.DTOs.Update;
 using ErpCalciolari.Models;
+using ErpCalciolari.Repositories;
 using ErpCalciolari.Repositories.Interfaces;
 
 namespace ErpCalciolari.Services
@@ -10,16 +11,18 @@ namespace ErpCalciolari.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IProductionRequirementRepository _requirementRepository;
 
-        public OrderService(IOrderRepository orderRepository, IProductRepository producutRepository)
+        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IProductionRequirementRepository requirementRepository)
         {
             _orderRepository = orderRepository;
-            _productRepository = producutRepository;
+            _productRepository = productRepository;
+            _requirementRepository = requirementRepository;
         }
 
         public async Task<Order> CreateOrderAsync(OrderCreateDto createDto)
         {
-            var order = new Order(createDto.CustomerName, createDto.OrderNumber, createDto.DeliveryDate);
+            var order = new Order(createDto.CustomerName, createDto.OrderNumber, createDto.DeliveryDate, createDto.Status);
 
             foreach (var item in createDto.Items)
             {
@@ -27,7 +30,24 @@ namespace ErpCalciolari.Services
 
                 if (product.Quantity < item.Quantity)
                 {
-                    throw new InvalidOperationException($"{product.Name} has only {product.Quantity}g available.");
+                    int additionalProductionNeeded = item.Quantity - product.Quantity;
+
+                    product.NeedsProduction = true;
+
+                    // Adiciona ou atualiza o registro na tabela de produção
+                    var requirement = await _requirementRepository.GetProductionRequirementWithProductCodeAsync(product.Code);
+                    if (requirement == null)
+                    {
+                        await _requirementRepository.CreateProductionRequirementAsync(
+                            new ProductionRequirement(product.Code, additionalProductionNeeded, order.DeliveryDate));
+                    }
+                    else
+                    {
+                        requirement.RequiredQuantity += additionalProductionNeeded;
+                        await _requirementRepository.UpdateProductionRequirementAsync(requirement);
+                    }
+
+                    await _productRepository.UpdateProductAsync(product.Id, product);
                 }
 
                 product.Quantity -= item.Quantity; // Atualiza o estoque

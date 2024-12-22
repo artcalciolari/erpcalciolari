@@ -39,6 +39,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<IProductionRequirementRepository, ProductionRequirementRepository>();
 
 // Debug logging
 builder.Logging.AddConsole();

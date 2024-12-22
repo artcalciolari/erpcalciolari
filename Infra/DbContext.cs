@@ -15,6 +15,7 @@ namespace ErpCalciolari.Infra
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<ProductionRequirement> ProductionRequirements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -59,6 +60,13 @@ namespace ErpCalciolari.Infra
                 .HasOne(oi => oi.Product)
                 .WithMany()
                 .HasForeignKey(oi => oi.ProductCode)
+                .HasPrincipalKey(p => p.Code);
+
+            // Relacionamento ProductionRequirement -> Product via ProductCode
+            modelBuilder.Entity<ProductionRequirement>()
+                .HasOne(pr => pr.Product)
+                .WithMany()
+                .HasForeignKey(pr => pr.ProductCode)
                 .HasPrincipalKey(p => p.Code);
         }
     }

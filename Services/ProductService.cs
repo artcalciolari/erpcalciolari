@@ -8,10 +8,12 @@ namespace ErpCalciolari.Services
     public class ProductService
     {
         private readonly IProductRepository _repository;
+        private readonly IProductionRequirementRepository _requirementRepository;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IProductRepository productRepository, IProductionRequirementRepository requirementRepository)
         {
             _repository = productRepository;
+            _requirementRepository = requirementRepository;
         }
 
         public async Task<Product> CreateProductAsync(ProductCreateDto createDto)
@@ -64,19 +66,39 @@ namespace ErpCalciolari.Services
         {
             var product = await _repository.GetProductWithIdAsync(id);
 
-            if (updateDto.Code.HasValue && updateDto.Code > 0)
-                product.Code = updateDto.Code.Value;
+            if (updateDto.Quantity.HasValue && updateDto.Quantity > 0)
+            {
+                int newStock = product.Quantity + updateDto.Quantity.Value;
+
+                // Recupera o requisito de produção associado ao produto
+                var productionRequirement = await _requirementRepository.GetProductionRequirementWithProductCodeAsync(product.Code);
+
+                if (productionRequirement != null)
+                {
+                    // Verifica se o novo estoque cobre os pedidos pendentes
+                    if (newStock >= productionRequirement.RequiredQuantity)
+                    {
+                        // Reseta os atributos e remove o registro na tabela de produção
+                        product.NeedsProduction = false;
+                        await _requirementRepository.DeleteRequirementAsync(productionRequirement.Id);
+                    }
+                }
+
+                product.Quantity = newStock;
+            }
+
             if (!string.IsNullOrWhiteSpace(updateDto.Name))
                 product.Name = updateDto.Name;
+
             if (!string.IsNullOrWhiteSpace(updateDto.Type))
                 product.Type = updateDto.Type;
-            if (updateDto.Quantity.HasValue && updateDto.Quantity > 0)
-                product.Quantity = updateDto.Quantity.Value;
+
             if (updateDto.Price.HasValue && updateDto.Price > 0)
                 product.Price = updateDto.Price.Value;
 
             return await _repository.UpdateProductAsync(id, product);
         }
+
 
         public async Task<bool> DeleteProductWithIdAsync(Guid id) 
         {

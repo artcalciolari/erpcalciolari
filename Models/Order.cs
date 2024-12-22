@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ErpCalciolari.Models
 {
@@ -20,15 +21,20 @@ namespace ErpCalciolari.Models
         [Column("delivery_date", TypeName = "timestamp with time zone")]
         public DateTime DeliveryDate { get; set; }
 
+        [Column("status")]
+        [DefaultValue("PENDENTE")] // Valor padrão. Os valores possíveis são: PENDENTE e OK
+        public string Status { get; set; }
+
         public List<OrderItem> Items { get; set; }
 
 
-        public Order(string customerName, int orderNumber, DateTime deliveryDate)
+        public Order(string customerName, int orderNumber, DateTime deliveryDate, string status)
         {
             CustomerName = customerName;
             OrderNumber = orderNumber;
             OrderDate = DateTime.UtcNow;
             DeliveryDate = deliveryDate;
+            Status = status;
             Items = [];
         }
     }

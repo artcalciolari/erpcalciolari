@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ErpCalciolari.Models
 {
@@ -23,6 +24,9 @@ namespace ErpCalciolari.Models
         [Column("price")]
         public decimal Price { get; set; }
 
+        [Column("needs_production")]
+        [DefaultValue(false)]
+        public bool NeedsProduction { get; set; }
 
         public Product(int code, string name, string type, int quantity, decimal price)
         {

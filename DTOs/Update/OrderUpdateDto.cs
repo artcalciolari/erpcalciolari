@@ -6,6 +6,7 @@ namespace ErpCalciolari.DTOs.Update
     {
         public string? CustomerName { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public string? Status { get; set; }
         public List<OrderItemCreateDto>? Items { get; set; }
     }
 }
