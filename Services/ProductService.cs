@@ -32,7 +32,8 @@ namespace ErpCalciolari.Services
                 Name = p.Name,
                 Type = p.Type,
                 Quantity = p.Quantity,
-                Price = p.Price
+                Price = p.Price,
+                NeedsProduction = p.NeedsProduction
             }).ToList();
         }
 
@@ -45,7 +46,8 @@ namespace ErpCalciolari.Services
                 Name = product.Name,
                 Type = product.Type,
                 Quantity = product.Quantity,
-                Price = product.Price
+                Price = product.Price,
+                NeedsProduction = product.NeedsProduction
             };
         }
 
@@ -58,7 +60,8 @@ namespace ErpCalciolari.Services
                 Name = product.Name,
                 Type = product.Type,
                 Quantity = product.Quantity,
-                Price = product.Price
+                Price = product.Price,
+                NeedsProduction = product.NeedsProduction
             };
         }
 

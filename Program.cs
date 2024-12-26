@@ -46,9 +46,23 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
-Console.WriteLine(WelcomeMessage.GetMessage());
-Console.WriteLine();
-Console.WriteLine("Database connected. Program started!");
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+        if (await dbContext.Database.CanConnectAsync())
+        {
+            Console.WriteLine(WelcomeMessage.GetMessage());
+            Console.WriteLine();
+            Console.WriteLine("Database connected. Program started!");
+        }
+    }
+}
+catch (Exception e)
+{
+    Console.WriteLine($"Failed to connect to the database: {e.Message}");
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

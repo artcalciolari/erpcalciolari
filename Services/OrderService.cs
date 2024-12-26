@@ -12,17 +12,24 @@ namespace ErpCalciolari.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly IProductionRequirementRepository _requirementRepository;
+        private readonly CustomerService _customerService;
 
-        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IProductionRequirementRepository requirementRepository)
+        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IProductionRequirementRepository requirementRepository, CustomerService customerService)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _requirementRepository = requirementRepository;
+            _customerService = customerService;
         }
 
         public async Task<Order> CreateOrderAsync(OrderCreateDto createDto)
         {
             var order = new Order(createDto.CustomerName, createDto.OrderNumber, createDto.DeliveryDate, createDto.Status);
+
+            if (!await _customerService.CustomerExistsWithName(createDto.CustomerName))
+            {
+                throw new KeyNotFoundException("Customer not found. Ensure the customer exists before creating an order.");
+            }
 
             foreach (var item in createDto.Items)
             {
@@ -30,24 +37,7 @@ namespace ErpCalciolari.Services
 
                 if (product.Quantity < item.Quantity)
                 {
-                    int additionalProductionNeeded = item.Quantity - product.Quantity;
-
-                    product.NeedsProduction = true;
-
-                    // Adiciona ou atualiza o registro na tabela de produção
-                    var requirement = await _requirementRepository.GetProductionRequirementWithProductCodeAsync(product.Code);
-                    if (requirement == null)
-                    {
-                        await _requirementRepository.CreateProductionRequirementAsync(
-                            new ProductionRequirement(product.Code, additionalProductionNeeded, order.DeliveryDate));
-                    }
-                    else
-                    {
-                        requirement.RequiredQuantity += additionalProductionNeeded;
-                        await _requirementRepository.UpdateProductionRequirementAsync(requirement);
-                    }
-
-                    await _productRepository.UpdateProductAsync(product.Id, product);
+                    await HandleProductionRequirementAsync(item, product, order);
                 }
 
                 product.Quantity -= item.Quantity; // Atualiza o estoque
@@ -69,13 +59,16 @@ namespace ErpCalciolari.Services
                 Id = o.Id,
                 OrderNumber = o.OrderNumber,
                 CustomerName = o.CustomerName,
+                OrderDate = o.OrderDate,
+                DeliveryDate = o.DeliveryDate,
+                Status = o.Status,
                 Items = o.Items.Select(i => new OrderItemReadDto
                 {
                     ProductCode = i.ProductCode,
+                    ProductName = i.Product.Name,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice
                 }).ToList(),
-                DeliveryDate = o.DeliveryDate
             }).ToList();
         }
 
@@ -87,13 +80,16 @@ namespace ErpCalciolari.Services
                 Id = order.Id,
                 OrderNumber = order.OrderNumber,
                 CustomerName = order.CustomerName,
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                Status = order.Status,
                 Items = order.Items.Select(i => new OrderItemReadDto
                 {
                     ProductCode = i.ProductCode,
+                    ProductName = i.Product.Name,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice
                 }).ToList(),
-                DeliveryDate = order.DeliveryDate
             };
         }
 
@@ -105,13 +101,16 @@ namespace ErpCalciolari.Services
                 Id = order.Id,
                 OrderNumber = order.OrderNumber,
                 CustomerName = order.CustomerName,
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                Status = order.Status,
                 Items = order.Items.Select(i => new OrderItemReadDto
                 {
                     ProductCode = i.ProductCode,
+                    ProductName = i.Product.Name,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice
                 }).ToList(),
-                DeliveryDate = order.DeliveryDate
             };
         }
 
@@ -151,7 +150,7 @@ namespace ErpCalciolari.Services
 
                     if (product.Quantity < newItem.Quantity)
                     {
-                        throw new InvalidOperationException($"{product.Name} has only {product.Quantity}g available.");
+                        await HandleProductionRequirementAsync(newItem, product, order);
                     }
 
                     product.Quantity -= newItem.Quantity; // Atualiza o estoque
@@ -167,6 +166,28 @@ namespace ErpCalciolari.Services
         public async Task<bool> DeleteOrderAsync(Guid orderId)
         {
             return await _orderRepository.DeleteOrderAsync(orderId);
+        }
+
+        private async Task HandleProductionRequirementAsync(OrderItemCreateDto item, Product product, Order order)
+        {
+            int additionalProductionNeeded = item.Quantity - product.Quantity;
+
+            product.NeedsProduction = true;
+
+            // Adiciona ou atualiza o registro na tabela de produção
+            var requirement = await _requirementRepository.GetProductionRequirementWithProductCodeAsync(product.Code);
+            if (requirement == null)
+            {
+                await _requirementRepository.CreateProductionRequirementAsync(
+                    new ProductionRequirement(product.Code, additionalProductionNeeded, order.DeliveryDate));
+            }
+            else
+            {
+                requirement.RequiredQuantity += additionalProductionNeeded;
+                await _requirementRepository.UpdateProductionRequirementAsync(requirement);
+            }
+
+            await _productRepository.UpdateProductAsync(product.Id, product);
         }
     }
 }

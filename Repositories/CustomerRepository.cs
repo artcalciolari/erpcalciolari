@@ -40,16 +40,23 @@ namespace ErpCalciolari.Repositories
 
         public async Task<Customer> GetCustomerWithIdAsync(Guid id)
         {
-            var employee = await _context.Customers.FirstOrDefaultAsync(e => e.Id == id)
+            var customer = await _context.Customers.FirstOrDefaultAsync(e => e.Id == id)
                 ?? throw new KeyNotFoundException($"no customer found with the id {id}");
-            return employee;
+            return customer;
         }
 
         public async Task<Customer> GetCustomerWithPhoneAsync(string phone)
         {
-            var employee = await _context.Customers.FirstOrDefaultAsync(e => e.Phone == phone)
+            var customer = await _context.Customers.FirstOrDefaultAsync(e => e.Phone == phone)
                 ?? throw new KeyNotFoundException($"no customer found with the phone {phone}");
-            return employee;
+            return customer;
+        }
+
+        public async Task<Customer> GetCustomerWithNameAsync(string name)
+        {
+            var customer = await _context.Customers.FirstOrDefaultAsync(e => e.Name == name)
+                ?? throw new KeyNotFoundException($"no customer found with the name {name}");
+            return customer;
         }
 
         public async Task<bool> UpdateCustomerAsync(Customer customer)

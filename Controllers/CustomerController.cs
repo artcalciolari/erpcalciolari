@@ -51,6 +51,13 @@ namespace ErpCalciolari.Controllers
             return Ok(customer);
         }
 
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetCustomerWithName(string name)
+        {
+            var customer = await _service.GetCustomerWithNameAsync(name);
+            return Ok(customer);
+        }
+
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateCustomer(Guid id, [FromBody] CustomerUpdateDto updateDto)
         {
