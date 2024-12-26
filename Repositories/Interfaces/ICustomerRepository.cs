@@ -7,6 +7,7 @@ namespace ErpCalciolari.Repositories.Interfaces
         Task<Customer> CreateCustomerAsync(Customer customer);
         Task<Customer> GetCustomerWithEmailAsync(string email);
         Task<Customer> GetCustomerWithPhoneAsync(string phone);
+        Task<Customer> GetCustomerWithNameAsync(string name);
         Task<Customer> GetCustomerWithIdAsync(Guid id);
         Task<List<Customer>> GetAllCustomersAsync();
         Task<bool> UpdateCustomerAsync(Customer customer);

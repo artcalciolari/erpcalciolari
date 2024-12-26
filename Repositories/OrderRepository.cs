@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ErpCalciolari.Repositories
 {
+    /// TODO: arrumar os DTOS de pedidos, produtos e ver porque raios o dto de pedidos está retornando a data do pedido como o valor padrão (mesmo estando certo no banco)
     public class OrderRepository : IOrderRepository
     {
         private readonly MyDbContext _context;
@@ -26,7 +27,8 @@ namespace ErpCalciolari.Repositories
             return await _context.Orders
                 .Include(o => o.Items)
                 .ThenInclude(oi => oi.Product)
-                .ToListAsync();
+                .ToListAsync()
+                ?? throw new Exception($"No orders found.");
         }
 
         public async Task<Order> GetOrderWithIdAsync(Guid orderId)
